@@ -141,6 +141,7 @@ CONSTR(2) InitBitboards() {
 
         IsolatedMask[sq] = AdjacentFilesBB(sq);
 
+        // All squares with higher rank in this or adjacent files
         PassedMask[WHITE][sq] = ShiftBB(~rank1BB, NORTH * RelativeRank(WHITE, RankOf(sq)))
                               & (FileBB[FileOf(sq)] | AdjacentFilesBB(sq));
 

@@ -475,13 +475,18 @@ void PrintBoard(const Position *pos) {
     fflush(stdout);
 }
 
-void PrintBB(Bitboard b)
+void PrintBB(Bitboard b, char const* str /* = NULL */)
 {
-  printf("rank1, file1 first\n");
-  for (int i = 0; i < 64; ++i)
+  char const* unnamed = "unnamed";
+  printf(" == %s == (a8-h8 first)\n", str ? str : unnamed);
+  for (int rank = 7; rank >= 0; --rank)
   {
-    printf("%s ", (b >> i) & 1 ? "■" : "□");
-    if (i % 8 == 7) printf("\n");
+    for (int file = 0; file < 8; ++file)
+    {
+      int const shift = rank * 8 + file;
+      printf(" %s", (b >> shift) & 1 ? "■" : "□");
+    }
+    printf("\n");
   }
 }
 #endif

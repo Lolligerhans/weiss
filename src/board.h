@@ -90,7 +90,11 @@ void PrintBoard(const Position *pos);
 
 
 #if defined DEV || !defined NDEBUG
-void PrintBB(Bitboard b);
+
+void PrintBB(Bitboard b, char const* str /* = NULL */);
+#define P(B) do{PrintBB( (B) , # B );}while(false)
+#define PI(I) do{printf(" %d %s\n", (I) , # I );}while(false)
+
 #endif
 
 INLINE bool ValidPiece(const Piece piece) { return (wP <= piece && piece <= wK) || (bP <= piece && piece <= bK); }
