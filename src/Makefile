@@ -150,8 +150,8 @@ $(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
 
 .PHONY: script_clean
 script_clean: clean
-	rm -vf ${SCRIPT_SRC_ALL:.c=.d}
-	rm -vf $(SCRIPT_OBJ_ALL)
-	rm -vf $(SCRIPT_OBJ_ALL_2)
-	rm -vf $(SCRIPT_OUT)
-	rm -vf $(SCRIPT_OUT_BASIC)
+	rm -f ${SCRIPT_SRC_ALL:.c=.d}
+	rm -f $(SCRIPT_OBJ_ALL)
+	rm -f $(SCRIPT_OBJ_ALL_2)
+	rm -f $(SCRIPT_OUT)
+	rm -f $(SCRIPT_OUT_BASIC)
