@@ -100,3 +100,84 @@ release: clean
 clean:
 	@$(RM) -f $(EXE)
 	@$(PGO_CLEAN)
+
+# Runscript targets
+SCRIPT_SRC := ${wildcard ./*.c}
+SCRIPT_OBJ := ${SCRIPT_SRC:.c=.o}
+
+#SCRIPT_DIRS := tuner/ Spyrrhic/ query/ noobprobe/ onlinesyzygy/
+
+SCRIPT_SRC_DIR := ${wildcard **/*.c}
+SCRIPT_OBJ_DIR := ${SCRIPT_SRC_DIR:.c=.o}
+
+#SCRIPT_SRC_ALL :=
+SCRIPT_OBJ_ALL := $(SCRIPT_OBJ) $(SCRIPT_OBJ_DIR)
+SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p}
+
+SCRIPT_FLAGS := $(CFLAGS) -MMD -MP
+SCRIPT_OUT := weiss
+SCRIPT_OUT_BASIC := weiss_basic_
+
+SCRIPT_PGO_BENCH := ./$(SCRIPT_OUT_BASIC) bench 12 2>&1 >/dev/null
+SCRIPT_PGO_MERGE := $(PGO_MERGE)
+SCRIPT_PGO_CLEAN := $(PGO_CLEAN)
+
+SCRIPT_DEBUG_WAIT :=
+
+.PHONY: script
+script: $(SCRIPT_OUT)
+
+$(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
+	$(SCRIPT_DEBUG_WAIT)
+	$(info =====>merge =====)
+	$(SCRIPT_PGO_MERGE)
+	$(info ===== merge>=====)
+	$(SCRIPT_DEBUG_WAIT)
+
+	$(SCRIPT_DEBUG_WAIT)
+	$(info =====>2 =====)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) $(SCRIPT_OBJ_ALL_2) -o $(SCRIPT_OUT) -lm $(PGO_USE)
+	$(info ===== 2>=====)
+	$(SCRIPT_DEBUG_WAIT)
+
+$(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
+	$(info $$SCRIPT_SRC_DIR is [${SCRIPT_SRC_DIR}])
+	$(info $$SCRIPT_OBJ_DIR is [${SCRIPT_OBJ_DIR}])
+#	$(info $$SCRIPT_SRC_ALL is [${SCRIPT_SRC_ALL}])
+	$(info $$SCRIPT_OBJ_ALL is [${SCRIPT_OBJ_ALL}])
+
+	$(SCRIPT_DEBUG_WAIT)
+	$(info =====>1 =====)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -o $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL) -lm $(PGO_GEN)
+	$(info ===== 1>=====)
+	$(SCRIPT_DEBUG_WAIT)
+
+	$(info =====>clean =====)
+	$(SCRIPT_PGO_CLEAN)
+	$(info ===== clean>=====)
+
+	$(SCRIPT_DEBUG_WAIT)
+	$(info =====>bench =====)
+	$(SCRIPT_PGO_BENCH)
+	$(info ===== bench>=====)
+	$(SCRIPT_DEBUG_WAIT)
+
+# Basic
+%.o: %.c
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_GEN) $(SCRIPT_FLAGS)
+
+# Profiled.
+# Unfortunately it has to re-compile every time, but it is still faster than
+# doing slow bench lol.
+%.p: %.c $(SCRIPT_OUT_BASIC)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_USE) $(SCRIPT_FLAGS)
+
+-include ${SCRIPT_SRC:%.c=%.d}
+-include ${SCRIPT_SRC_DIR:%.c=%.d}
+
+.PHONY: script_clean
+script_clean: clean
+	rm -vf $(SCRIPT_OBJ_ALL)
+	rm -vf $(SCRIPT_OBJ_ALL_2)
+	rm -vf $(SCRIPT_OUT)
+	rm -vf $(SCRIPT_OUT_BASIC)
