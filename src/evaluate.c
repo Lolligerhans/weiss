@@ -212,6 +212,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         coverage |= N3(coverage);
     }
     Bitboard const passers = pawns & ~coverage;
+    ei->passedPawns |= passers;
     int passerBonus = 0;
     int extraBbBonus = 0;
 
@@ -289,7 +290,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
                 TraceIncr(PassedDefended[rank]);
             }
 
-            ei->passedPawns |= BB(sq);
+//            ei->passedPawns |= BB(sq);
         }
     }
 
