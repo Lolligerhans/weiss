@@ -189,10 +189,11 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     Bitboard iso = pawns;
     iso |= N1(iso) | N2(iso) | S1(iso) | S2(iso);
     iso |= N3(iso) | S3(iso);
-    int const AdjustBonus = PawnIsolated *
+    int const isoBonus = PawnIsolated *
       PopCount(pawns & ( ShiftBB(iso, WEST)
                        | ShiftBB(iso, EAST) ));
-    (void)AdjustBonus;
+    (void) isoBonus;
+    int realBonus = 0;
 
     // Evaluate each individual pawn
     while (pawns) {
@@ -205,6 +206,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         // Isolated pawns
         if (!(IsolatedMask[sq] & colorPieceBB(color, PAWN))) {
             eval += PawnIsolated;
+            realBonus += PawnIsolated;
             TraceIncr(PawnIsolated);
         }
 
@@ -223,6 +225,14 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
             ei->passedPawns |= BB(sq);
         }
+    }
+
+    if (realBonus != isoBonus)
+    {
+      PrintBoard(pos);
+      printf("%s%d\n", "real", realBonus);
+      printf("%s%d\n", "iso", isoBonus);
+      exit(0);
     }
 
     return eval;
