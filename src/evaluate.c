@@ -213,31 +213,51 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     }
     Bitboard const passers = pawns & ~coverage;
     int passerBonus = 0;
+    int extraBbBonus = 0;
+
     int realBonus = 0;
     int realCount = 0;
+    int extraBonus = 0;
     if (color == WHITE)
     {
         // (!) rankQBB is counting from 1
 #define RANK_PASSER_BONUS_W(Q) (PawnPassed[Q-1] * PopCount(passers & rank ## Q ## BB))
+#define RANK_PASSER_BONUS_W2(Q) (PassedDefended[(Q)-1] * PopCount(pawnAttacks & passers & rank ## Q ## BB))
         passerBonus += RANK_PASSER_BONUS_W(2);
         passerBonus += RANK_PASSER_BONUS_W(3);
         passerBonus += RANK_PASSER_BONUS_W(4);
         passerBonus += RANK_PASSER_BONUS_W(5);
         passerBonus += RANK_PASSER_BONUS_W(6);
         passerBonus += RANK_PASSER_BONUS_W(7);
+
+        extraBbBonus += RANK_PASSER_BONUS_W2(2);
+        extraBbBonus += RANK_PASSER_BONUS_W2(3);
+        extraBbBonus += RANK_PASSER_BONUS_W2(4);
+        extraBbBonus += RANK_PASSER_BONUS_W2(5);
+        extraBbBonus += RANK_PASSER_BONUS_W2(6);
+        extraBbBonus += RANK_PASSER_BONUS_W2(7);
     }
     else
     {
         // (!) rankQBB is counting from 1
-#define RANK_PASSER_BONUS_B(Q) (PawnPassed[7-(Q-1)] * PopCount(passers & rank ## Q ## BB))
+#define RANK_PASSER_BONUS_B(Q) (PawnPassed[7-((Q)-1)] * PopCount(passers & rank ## Q ## BB))
+#define RANK_PASSER_BONUS_B2(Q) (PassedDefended[7-((Q)-1)] * PopCount(pawnAttacks & passers & rank ## Q ## BB))
         passerBonus += RANK_PASSER_BONUS_B(2);
         passerBonus += RANK_PASSER_BONUS_B(3);
         passerBonus += RANK_PASSER_BONUS_B(4);
         passerBonus += RANK_PASSER_BONUS_B(5);
         passerBonus += RANK_PASSER_BONUS_B(6);
         passerBonus += RANK_PASSER_BONUS_B(7);
+
+        extraBbBonus += RANK_PASSER_BONUS_B2(2);
+        extraBbBonus += RANK_PASSER_BONUS_B2(3);
+        extraBbBonus += RANK_PASSER_BONUS_B2(4);
+        extraBbBonus += RANK_PASSER_BONUS_B2(5);
+        extraBbBonus += RANK_PASSER_BONUS_B2(6);
+        extraBbBonus += RANK_PASSER_BONUS_B2(7);
     }
     eval += passerBonus;
+    eval += extraBbBonus;
 
     // Evaluate each individual pawn
     while (pawns) {
@@ -264,7 +284,8 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
             TraceIncr(PawnPassed[rank]);
 
             if (BB(sq) & pawnAttacks) {
-                eval += PassedDefended[rank];
+//                eval += PassedDefended[rank];
+                extraBonus += PassedDefended[rank];
                 TraceIncr(PassedDefended[rank]);
             }
 
@@ -272,17 +293,20 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         }
     }
 
-    if (realBonus != passerBonus)
+    if (extraBonus != extraBbBonus)
     {
       PrintBoard(pos);
       printf("%s=%d,%d\n", "real", MgScore(realBonus), EgScore(realBonus));
-
       printf("%s=%d,%d\n", "passed", MgScore(passerBonus), EgScore(passerBonus));
       P(coverage);
       printf("Color=%s passer=%d\n", (int)color ? "black" : "white", PopCount(passers));
       PI(realCount);
       P(passers);
       P(colorPieceBB(!color, PAWN));
+
+      printf("-----\n");
+      PS(extraBonus);
+      PS(extraBbBonus);
 
 //      printf("%s=%d,%d\n", "community", MgScore(isoBonus), EgScore(isoBonus));
 //      PrintBB(community);
