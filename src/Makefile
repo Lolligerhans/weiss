@@ -164,13 +164,13 @@ $(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
 
 # Basic
 %.o: %.c
-	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_GEN) $(SCRIPT_FLAGS)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_GEN)
 
 # Profiled.
 # Unfortunately it has to re-compile every time, but it is still faster than
 # doing slow bench lol.
 %.p: %.c $(SCRIPT_OUT_BASIC)
-	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_USE) $(SCRIPT_FLAGS)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_USE)
 
 -include ${SCRIPT_SRC:%.c=%.d}
 -include ${SCRIPT_SRC_DIR:%.c=%.d}
