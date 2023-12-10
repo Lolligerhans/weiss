@@ -237,6 +237,9 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         // (!) rankQBB is counting from 1
 #define RANK_PASSER_BONUS_W(Q) (PawnPassed[Q-1] * PopCount(passers & rank ## Q ## BB))
 #define RANK_PASSER_BONUS_W2(Q) (PassedDefended[(Q)-1] * PopCount(pawnAttacks & passers & rank ## Q ## BB))
+        // Alternatively could try to shift pawns out at the top while giving
+        // the same bonus every iteration - recovering liner scaling.
+        // Or any scale easily computable on the fly.
         passerBonus += RANK_PASSER_BONUS_W(2);
         passerBonus += RANK_PASSER_BONUS_W(3);
         passerBonus += RANK_PASSER_BONUS_W(4);
