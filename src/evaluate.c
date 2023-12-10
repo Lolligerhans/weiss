@@ -237,8 +237,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         passerBonus += RANK_PASSER_BONUS_B(6);
         passerBonus += RANK_PASSER_BONUS_B(7);
     }
-
-//    eval += passerBonus;
+    eval += passerBonus;
 
     // Evaluate each individual pawn
     while (pawns) {
@@ -259,7 +258,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
             int rank = RelativeRank(color, RankOf(sq));
 
-            eval += PawnPassed[rank];
+//            eval += PawnPassed[rank];
             realBonus += PawnPassed[rank];
             realCount += 1;
             TraceIncr(PawnPassed[rank]);
