@@ -181,6 +181,19 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         TraceIncr(PawnPhalanx[rank]);
     }
 
+    // Isolated BB
+    // Could additionally:
+    //  - not shift blocked pawns (N1, S1)
+    //  - generate doubled the same way
+    //  - ignore A-/H-File wrap-round-shift
+    Bitboard iso = pawns;
+    iso |= N1(iso) | N2(iso) | S1(iso) | S2(iso);
+    iso |= N3(iso) | S3(iso);
+    int const AdjustBonus = PawnIsolated *
+      PopCount(pawns & ( ShiftBB(iso, WEST)
+                       | ShiftBB(iso, EAST) ));
+    (void)AdjustBonus;
+
     // Evaluate each individual pawn
     while (pawns) {
 
