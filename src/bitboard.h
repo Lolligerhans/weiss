@@ -126,7 +126,7 @@ extern Bitboard IsolatedMask[64];
 INLINE Bitboard ShiftBB(Bitboard bb, const Direction dir) {
 
     // Horizontal shifts should not wrap around
-    const int h = dir & 7;
+    const int h = dir & 7;  // File component
     bb = (h == 1) ? bb & ~fileHBB
        : (h == 7) ? bb & ~fileABB
                   : bb;
@@ -227,3 +227,5 @@ bool KingAttacked(const Position *pos, Color color);
 INLINE Bitboard Checkers(const Position *pos) {
     return colorBB(!sideToMove) & Attackers(pos, kingSq(sideToMove), pieceBB(ALL));
 }
+
+#include "bitboard.inc"

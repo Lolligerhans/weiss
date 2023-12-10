@@ -474,6 +474,16 @@ void PrintBoard(const Position *pos) {
     printf("Zobrist Key: %" PRIu64 "\n\n", pos->key);
     fflush(stdout);
 }
+
+void PrintBB(Bitboard b)
+{
+  printf("rank1, file1 first\n");
+  for (int i = 0; i < 64; ++i)
+  {
+    printf("%s ", (b >> i) & 1 ? "■" : "□");
+    if (i % 8 == 7) printf("\n");
+  }
+}
 #endif
 
 #ifndef NDEBUG

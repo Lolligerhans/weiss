@@ -181,6 +181,22 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         TraceIncr(PawnPhalanx[rank]);
     }
 
+    // Isolated BB
+    // Could additionally:
+    //  - not shift blocked pawns (N1, S1)
+    //  - generate doubled the same way
+    //  - ignore A-/H-File wrap-round-shift
+    Bitboard community = pawns;
+    community |= N1(community) | N2(community) | S1(community) | S2(community);
+    community |= N3(community) | S3(community);
+    Bitboard const isoPawns = pawns & ~( ShiftBB(community, WEST)
+                                       | ShiftBB(community, EAST) );
+    eval += PawnIsolated * PopCount(isoPawns);
+
+//    (void) isoBonus;
+//    (void) isoCount;
+//    (void) realBonus;
+
     // Evaluate each individual pawn
     while (pawns) {
 
@@ -191,7 +207,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
         // Isolated pawns
         if (!(IsolatedMask[sq] & colorPieceBB(color, PAWN))) {
-            eval += PawnIsolated;
+//            eval += PawnIsolated;
             TraceIncr(PawnIsolated);
         }
 
@@ -211,6 +227,19 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
             ei->passedPawns |= BB(sq);
         }
     }
+
+    /*
+    if (realBonus != isoBonus)
+    {
+      PrintBoard(pos);
+      printf("%s=%d\n", "real", realBonus);
+      printf("%s=%d,%d\n", "community", MgScore(isoBonus), EgScore(isoBonus));
+      PrintBB(community);
+      printf("Color=%d isoCount=%d\n", (int)color, isoCount);
+      PrintBB(isoPawns);
+      exit(0);
+    }
+    */
 
     return eval;
 }

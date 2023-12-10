@@ -88,6 +88,11 @@ bool PositionOk(const Position *pos);
 void PrintBoard(const Position *pos);
 #endif
 
+
+#if defined DEV || !defined NDEBUG
+void PrintBB(Bitboard b);
+#endif
+
 INLINE bool ValidPiece(const Piece piece) { return (wP <= piece && piece <= wK) || (bP <= piece && piece <= bK); }
 INLINE bool ValidCapture(const Piece capt) { return (wP <= capt && capt <= wQ) || (bP <= capt && capt <= bQ); }
 INLINE bool ValidPromotion(const Piece promo) { return (wN <= promo && promo <= wQ) || (bN <= promo && promo <= bQ); }
