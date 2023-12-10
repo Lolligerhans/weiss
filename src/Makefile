@@ -107,10 +107,10 @@ SCRIPT_OBJ := ${SCRIPT_SRC:.c=.o}
 
 #SCRIPT_DIRS := tuner/ Spyrrhic/ query/ noobprobe/ onlinesyzygy/
 
-SCRIPT_SRC_DIR := ${wildcard **/*.c}
+SCRIPT_SRC_DIR := ${wildcard */*.c}
 SCRIPT_OBJ_DIR := ${SCRIPT_SRC_DIR:.c=.o}
 
-#SCRIPT_SRC_ALL :=
+SCRIPT_SRC_ALL := $(SCRIPT_SRC) $(SCRIPT_SRC_DIR)
 SCRIPT_OBJ_ALL := $(SCRIPT_OBJ) $(SCRIPT_OBJ_DIR)
 SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p}
 
@@ -177,6 +177,7 @@ $(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
 
 .PHONY: script_clean
 script_clean: clean
+	rm -vf ${SCRIPT_SRC_ALL:.c=.d}
 	rm -vf $(SCRIPT_OBJ_ALL)
 	rm -vf $(SCRIPT_OBJ_ALL_2)
 	rm -vf $(SCRIPT_OUT)
