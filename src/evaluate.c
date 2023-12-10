@@ -213,6 +213,14 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     }
     Bitboard const passers = pawns & ~coverage;
     ei->passedPawns |= passers;
+
+    // Replacing pawns loop fully dcc0827fa86f9d29d85d86153de95d061614df94
+    // sudo perf stat -r 30 -a -B -e cycles:u,instructions:u ./weiss bench
+    // 10,6526 +- 0,0181 seconds time elapsed  ( +-  0,17% )
+    // sudo perf stat -r 30 -a -B -e cycles:u,instructions:u ./weiss_master bench
+    // 10,7351 +- 0,0168 seconds time elapsed  ( +-  0,16% )
+
+
     int passerBonus = 0;
     int extraBbBonus = 0;
 
