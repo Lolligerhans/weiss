@@ -148,8 +148,7 @@ $(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
 %.p: %.c $(SCRIPT_OUT_BASIC)
 	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_USE)
 
--include ${SCRIPT_SRC:%.c=%.d}
--include ${SCRIPT_SRC_DIR:%.c=%.d}
+-include ${SCRIPT_SRC_ALL:%.c=%.d}
 
 .PHONY: script_clean
 script_clean: clean
