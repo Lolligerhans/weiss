@@ -112,7 +112,7 @@ SCRIPT_OBJ_DIR := ${SCRIPT_SRC_DIR:.c=.o}
 
 SCRIPT_SRC_ALL := $(SCRIPT_SRC) $(SCRIPT_SRC_DIR)
 SCRIPT_OBJ_ALL := $(SCRIPT_OBJ) $(SCRIPT_OBJ_DIR)
-SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p}
+SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p} # .p files
 
 SCRIPT_FLAGS := $(CFLAGS) -MMD -MP
 SCRIPT_OUT := weiss
@@ -127,19 +127,19 @@ SCRIPT_DEBUG_WAIT :=
 .PHONY: script
 script: $(SCRIPT_OUT)
 
-$(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
-	$(SCRIPT_PGO_MERGE)
-	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) $(SCRIPT_OBJ_ALL_2) -o $(SCRIPT_OUT) -lm $(PGO_USE)
 $(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
 	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -o $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL) -lm $(PGO_GEN)
 	$(SCRIPT_PGO_CLEAN)
 	$(SCRIPT_PGO_BENCH)
+$(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
+	$(SCRIPT_PGO_MERGE)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) $(SCRIPT_OBJ_ALL_2) -o $(SCRIPT_OUT) -lm $(PGO_USE)
 
-# Basic
+# Gen profiling
 %.o: %.c
 	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_GEN)
 
-# Profiled.
+# Use profiling
 # Unfortunately it has to re-compile every time, but it is still faster than
 # doing slow bench lol.
 %.p: %.c $(SCRIPT_OUT_BASIC)
