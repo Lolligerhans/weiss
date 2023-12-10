@@ -1,20 +1,18 @@
-#																		 \
-  Weiss is a UCI compliant chess engine. 								 \
-  Copyright (C) 2023 Terje Kirstihagen 								 \
-																		 \
-  This program is free software: you can redistribute it and/or modify	 \
-  it under the terms of the GNU General Public License as published by	 \
-  the Free Software Foundation, either version 3 of the License, or		 \
-  (at your option) any later version.									 \
-																		 \
-  This program is distributed in the hope that it will be useful,		 \
-  but WITHOUT ANY WARRANTY; without even the implied warranty of		 \
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the			 \
-  GNU General Public License for more details.							 \
-																		 \
-  You should have received a copy of the GNU General Public License		 \
-  along with this program.  If not, see <https://www.gnu.org/licenses/>. \
-#																		 \
+# Weiss is a UCI compliant chess engine.
+# Copyright (C) 2023 Terje Kirstihagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # General
 EXE    = weiss
@@ -101,7 +99,12 @@ clean:
 	@$(RM) -f $(EXE)
 	@$(PGO_CLEAN)
 
+#===============================================================================
 # Runscript targets
+#===============================================================================
+
+# We use a little bit of the above stuff
+
 SCRIPT_SRC := ${wildcard ./*.c}
 SCRIPT_OBJ := ${SCRIPT_SRC:.c=.o}
 
@@ -112,7 +115,7 @@ SCRIPT_OBJ_DIR := ${SCRIPT_SRC_DIR:.c=.o}
 
 SCRIPT_SRC_ALL := $(SCRIPT_SRC) $(SCRIPT_SRC_DIR)
 SCRIPT_OBJ_ALL := $(SCRIPT_OBJ) $(SCRIPT_OBJ_DIR)
-SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p} # .p files
+SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p} # .p to avoid name collision
 
 SCRIPT_FLAGS := $(CFLAGS) -MMD -MP
 SCRIPT_OUT := weiss
