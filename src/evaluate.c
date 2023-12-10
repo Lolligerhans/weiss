@@ -219,6 +219,11 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     int realBonus = 0;
     int realCount = 0;
     int extraBonus = 0;
+
+    UNUSED(extraBonus);
+    UNUSED(realBonus);
+    UNUSED(realCount);
+
     if (color == WHITE)
     {
         // (!) rankQBB is counting from 1
@@ -260,6 +265,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     eval += passerBonus;
     eval += extraBbBonus;
 
+#if false
     // Evaluate each individual pawn
     while (pawns) {
 
@@ -293,10 +299,17 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 //            ei->passedPawns |= BB(sq);
         }
     }
+#endif
 
+#if false
+#error test
     if (extraBonus != extraBbBonus)
     {
       PrintBoard(pos);
+
+      PS(extraBonus);
+      PS(extraBbBonus);
+
       printf("%s=%d,%d\n", "real", MgScore(realBonus), EgScore(realBonus));
       printf("%s=%d,%d\n", "passed", MgScore(passerBonus), EgScore(passerBonus));
       P(coverage);
@@ -305,10 +318,6 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
       P(passers);
       P(colorPieceBB(!color, PAWN));
 
-      printf("-----\n");
-      PS(extraBonus);
-      PS(extraBbBonus);
-
 //      printf("%s=%d,%d\n", "community", MgScore(isoBonus), EgScore(isoBonus));
 //      PrintBB(community);
 //      printf("Color=%d isoCount=%d\n", (int)color, isoCount);
@@ -316,6 +325,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
       exit(0);
     }
+#endif
 
     return eval;
 }

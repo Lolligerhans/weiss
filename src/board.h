@@ -95,6 +95,7 @@ void PrintBB(Bitboard b, char const* str /* = NULL */);
 #define P(B) do{PrintBB( (B) , # B );}while(false)
 #define PI(I) do{printf(" %d %s\n", (I) , # I );}while(false)
 #define PS(I) do{printf(" (%d,%d) %s\n", MgScore((I)), EgScore((I)), # I );}while(false)
+#define UNUSED(X) {(void)(X);}
 
 #endif
 
