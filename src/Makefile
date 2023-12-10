@@ -1,20 +1,18 @@
-#																		 \
-  Weiss is a UCI compliant chess engine. 								 \
-  Copyright (C) 2023 Terje Kirstihagen 								 \
-																		 \
-  This program is free software: you can redistribute it and/or modify	 \
-  it under the terms of the GNU General Public License as published by	 \
-  the Free Software Foundation, either version 3 of the License, or		 \
-  (at your option) any later version.									 \
-																		 \
-  This program is distributed in the hope that it will be useful,		 \
-  but WITHOUT ANY WARRANTY; without even the implied warranty of		 \
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the			 \
-  GNU General Public License for more details.							 \
-																		 \
-  You should have received a copy of the GNU General Public License		 \
-  along with this program.  If not, see <https://www.gnu.org/licenses/>. \
-#																		 \
+# Weiss is a UCI compliant chess engine.
+# Copyright (C) 2023 Terje Kirstihagen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # General
 EXE    = weiss
@@ -100,3 +98,62 @@ release: clean
 clean:
 	@$(RM) -f $(EXE)
 	@$(PGO_CLEAN)
+
+#===============================================================================
+# Runscript targets
+#===============================================================================
+
+# We use a little bit of the above stuff
+
+SCRIPT_SRC := ${wildcard ./*.c}
+SCRIPT_OBJ := ${SCRIPT_SRC:.c=.o}
+
+#SCRIPT_DIRS := tuner/ Spyrrhic/ query/ noobprobe/ onlinesyzygy/
+
+SCRIPT_SRC_DIR := ${wildcard */*.c}
+SCRIPT_OBJ_DIR := ${SCRIPT_SRC_DIR:.c=.o}
+
+SCRIPT_SRC_ALL := $(SCRIPT_SRC) $(SCRIPT_SRC_DIR)
+SCRIPT_OBJ_ALL := $(SCRIPT_OBJ) $(SCRIPT_OBJ_DIR)
+SCRIPT_OBJ_ALL_2 := ${SCRIPT_OBJ_ALL:.o=.p} # .p to avoid name collision
+
+SCRIPT_FLAGS := $(CFLAGS) -MMD -MP -DDEV
+SCRIPT_OUT := weiss
+SCRIPT_OUT_BASIC := weiss_basic_
+
+SCRIPT_PGO_BENCH := ./$(SCRIPT_OUT_BASIC) bench 12 2>&1 >/dev/null
+SCRIPT_PGO_MERGE := $(PGO_MERGE)
+SCRIPT_PGO_CLEAN := $(PGO_CLEAN)
+
+SCRIPT_DEBUG_WAIT :=
+
+.PHONY: script
+script: $(SCRIPT_OUT)
+
+$(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -o $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL) -lm $(PGO_GEN)
+	$(SCRIPT_PGO_CLEAN)
+	$(SCRIPT_PGO_BENCH)
+$(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
+	$(SCRIPT_PGO_MERGE)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) $(SCRIPT_OBJ_ALL_2) -o $(SCRIPT_OUT) -lm $(PGO_USE)
+
+# Gen profiling
+%.o: %.c
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_GEN)
+
+# Use profiling
+# Unfortunately it has to re-compile every time, but it is still faster than
+# doing slow bench lol.
+%.p: %.c $(SCRIPT_OUT_BASIC)
+	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -c $< -o $@ $(PGO_USE)
+
+-include ${SCRIPT_SRC_ALL:%.c=%.d}
+
+.PHONY: script_clean
+script_clean: clean
+	rm -f ${SCRIPT_SRC_ALL:.c=.d}
+	rm -f $(SCRIPT_OBJ_ALL)
+	rm -f $(SCRIPT_OBJ_ALL_2)
+	rm -f $(SCRIPT_OUT)
+	rm -f $(SCRIPT_OUT_BASIC)

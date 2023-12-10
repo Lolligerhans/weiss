@@ -1,0 +1,15 @@
+# Build
+*.p
+weiss_basic_
+weiss
+
+# Engine copies
+weiss_master
+weiss_patch
+
+# Edit
+run.sh
+commands.sh
+
+# TODO Remove eventually
+scripts/
