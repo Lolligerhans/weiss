@@ -280,15 +280,15 @@ declare -r bin_start=" ";
 show_commit_bench()
 {
   declare cb="$(get_commit_bench "$1")";
-  declare col="$text_lightred";
-  if [[ -n "$cb" ]]; then col="$text_lightgreen"; fi
+  declare col="$text_red";
+  if [[ -n "$cb" ]]; then col="$text_green"; fi
   printf "%s\n" "$code_start$cb  ${col}∗ $1$text_normal";
 }
 show_branch_bench()
 {
   declare bb="$(get_branch_bench "$1")";
-  declare col="$text_lightred";
-  if [[ -n "$bb" ]]; then col="$text_lightblue"; fi
+  declare col="$text_red";
+  if [[ -n "$bb" ]]; then col="$text_blue"; fi
   printf "%s\n" "$code_start$bb ${col}⎇  $1$text_normal";
 }
 show_binary_bench()
@@ -304,9 +304,9 @@ show_binary_bench()
   if [[ -n "$validation_commit" ]]; then
     declare -r commit_val="$(get_commit_bench "$validation_commit")";
     if [[ -n "$commit_val" ]] && [[ "$bin_bench" == "$commit_val" ]]; then
-      col="$col${text_lightgreen}";
+      col="$col${text_green}";
     else
-      col="$col${text_lightred}";
+      col="$col${text_red}";
     fi
   fi
 
