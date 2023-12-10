@@ -124,7 +124,7 @@ extern EvalTrace T;
 // Runs the tuner
 void Tune();
 
-#else
+#else   // #ifdef TUNE
 #define TRACE (0)
 #define TraceCount(term)
 #define TraceIncr(term)
