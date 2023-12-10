@@ -128,39 +128,12 @@ SCRIPT_DEBUG_WAIT :=
 script: $(SCRIPT_OUT)
 
 $(SCRIPT_OUT): $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL_2)
-	$(SCRIPT_DEBUG_WAIT)
-	$(info =====>merge =====)
 	$(SCRIPT_PGO_MERGE)
-	$(info ===== merge>=====)
-	$(SCRIPT_DEBUG_WAIT)
-
-	$(SCRIPT_DEBUG_WAIT)
-	$(info =====>2 =====)
 	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) $(SCRIPT_OBJ_ALL_2) -o $(SCRIPT_OUT) -lm $(PGO_USE)
-	$(info ===== 2>=====)
-	$(SCRIPT_DEBUG_WAIT)
-
 $(SCRIPT_OUT_BASIC): $(SCRIPT_OBJ_ALL)
-	$(info $$SCRIPT_SRC_DIR is [${SCRIPT_SRC_DIR}])
-	$(info $$SCRIPT_OBJ_DIR is [${SCRIPT_OBJ_DIR}])
-#	$(info $$SCRIPT_SRC_ALL is [${SCRIPT_SRC_ALL}])
-	$(info $$SCRIPT_OBJ_ALL is [${SCRIPT_OBJ_ALL}])
-
-	$(SCRIPT_DEBUG_WAIT)
-	$(info =====>1 =====)
 	$(CC) $(SCRIPT_FLAGS) $(NDEBUG) $(LIBS) -o $(SCRIPT_OUT_BASIC) $(SCRIPT_OBJ_ALL) -lm $(PGO_GEN)
-	$(info ===== 1>=====)
-	$(SCRIPT_DEBUG_WAIT)
-
-	$(info =====>clean =====)
 	$(SCRIPT_PGO_CLEAN)
-	$(info ===== clean>=====)
-
-	$(SCRIPT_DEBUG_WAIT)
-	$(info =====>bench =====)
 	$(SCRIPT_PGO_BENCH)
-	$(info ===== bench>=====)
-	$(SCRIPT_DEBUG_WAIT)
 
 # Basic
 %.o: %.c
