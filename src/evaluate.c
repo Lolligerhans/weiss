@@ -148,25 +148,29 @@ const int CountModifier[8] = { 0, 0, 63, 126, 96, 124, 124, 128 };
 INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
     const Direction down = color == WHITE ? SOUTH : NORTH;
+    Direction const up = -down;
 
     int count, eval = 0;
 
-    Bitboard pawns = colorPieceBB(color, PAWN);
-    Bitboard pawnAttacks = PawnBBAttackBB(pawns, color);
+    Bitboard const pawns = colorPieceBB(color, PAWN);
+    Bitboard const pawnAttacks = PawnBBAttackBB(pawns, color);
 
     // Doubled pawns (one directly in front of the other)
     count = PopCount(pawns & ShiftBB(pawns, NORTH));
-    eval += PawnDoubled * count;
+    count += PopCount(pawns & ShiftBB(pawns, SOUTH));
+    count /= 2;
+//    eval += PawnDoubled * count;
     TraceCount(PawnDoubled);
 
     // Doubled pawns (one square between them)
     count = PopCount(pawns & ShiftBB(pawns, 2 * NORTH));
-    eval += PawnDoubled2 * count;
+    count = PopCount(pawns & ShiftBB(pawns, 2 * NORTH));
+//    eval += PawnDoubled2 * count;
     TraceCount(PawnDoubled2);
 
     // Pawns defending pawns
     count = PopCount(pawns & PawnBBAttackBB(pawns, !color));
-    eval += PawnSupport * count;
+//    eval += PawnSupport * count;
     TraceCount(PawnSupport);
 
     // Open pawns
@@ -182,6 +186,17 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
         eval += PawnPhalanx[rank];
         TraceIncr(PawnPhalanx[rank]);
     }
+
+    // All BB
+    Bitboard const pn = N1(pawns);
+    Bitboard const pnn = N2(pawns);
+    Bitboard const pd = ShiftBB(pawns, down);
+    eval += PawnDoubled * PopCount(pawns & pn);
+    eval += PawnDoubled2 * PopCount(pawns & pnn);
+    Bitboard const pnw = W1(pn);
+    Bitboard const pne = E1(pn);
+    Bitboard const p_nw_ne = pnw | pne;
+    eval += PawnSupport * PopCount(pawns & p_nw_ne);
 
     // Isolated BB
     // Could additionally:
