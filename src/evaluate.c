@@ -147,6 +147,15 @@ const int CountModifier[8] = { 0, 0, 63, 126, 96, 124, 124, 128 };
 // Evaluates pawns
 INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
+    int real = 0;
+    int fake = 0;
+    Bitboard realBoard = 0;
+    Bitboard fakeBoard = 0;
+    UNUSED(fake);
+    UNUSED(real);
+    UNUSED(fakeBoard);
+    UNUSED(realBoard);
+
     const Direction down = color == WHITE ? SOUTH : NORTH;
     Direction const up = -down;
 
@@ -170,7 +179,9 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
     // Pawns defending pawns
     count = PopCount(pawns & PawnBBAttackBB(pawns, !color));
-    eval += PawnSupport * count;
+    real = count;
+    realBoard = pawns & PawnBBAttackBB(pawns, !color);
+//    eval += PawnSupport * count;
     TraceCount(PawnSupport);
 
     // Open pawns
@@ -192,12 +203,17 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     Bitboard const pnn = N2(pawns);
     eval += PawnDoubled * PopCount(pawns & pn);
     eval += PawnDoubled2 * PopCount(pawns & pnn);
-    Bitboard const pnw = W1(pn);
-    Bitboard const pne = E1(pn);
-    Bitboard const p_nw_ne = pnw | pne;
-//    eval += PawnSupport * PopCount(pawns & p_nw_ne);
 
     Bitboard const pd = ShiftBB(pawns, down);
+    Bitboard const p_de_dw = ShiftBB(pd, WEST) | ShiftBB(pd, EAST);
+    eval += PawnSupport * PopCount(pawns & p_de_dw);
+    fake = PopCount(pawns & p_de_dw);
+    fakeBoard = pawns & p_de_dw;
+
+    Bitboard const pnw = W1(pn) & ~fileHBB;
+    Bitboard const pne = E1(pn) & ~fileABB;
+    Bitboard const p_nw_ne = pnw | pne;
+//    eval += PawnSupport * PopCount(pawns & p_nw_ne);
 
     UNUSED(pd);
     UNUSED(up);
@@ -334,29 +350,33 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     }
 #endif
 
-#if false
-#error test
-    if (extraBonus != extraBbBonus)
+#if true
+    if (real != fake)
     {
-      PrintBoard(pos);
+        PrintBoard(pos);
 
-      PS(extraBonus);
-      PS(extraBbBonus);
+        P(realBoard);
+        PI(real);
+        P(fakeBoard);
+        PI(fake);
 
-      printf("%s=%d,%d\n", "real", MgScore(realBonus), EgScore(realBonus));
-      printf("%s=%d,%d\n", "passed", MgScore(passerBonus), EgScore(passerBonus));
-      P(coverage);
-      printf("Color=%s passer=%d\n", (int)color ? "black" : "white", PopCount(passers));
-      PI(realCount);
-      P(passers);
-      P(colorPieceBB(!color, PAWN));
+        PS(extraBonus);
+        PS(extraBbBonus);
 
-//      printf("%s=%d,%d\n", "community", MgScore(isoBonus), EgScore(isoBonus));
-//      PrintBB(community);
-//      printf("Color=%d isoCount=%d\n", (int)color, isoCount);
-//      PrintBB(isoPawns);
+        printf("%s=%d,%d\n", "real", MgScore(realBonus), EgScore(realBonus));
+        printf("%s=%d,%d\n", "passed", MgScore(passerBonus), EgScore(passerBonus));
+        P(coverage);
+        printf("Color=%s passer=%d\n", (int)color ? "black" : "white", PopCount(passers));
+        PI(realCount);
+        P(passers);
+        P(colorPieceBB(!color, PAWN));
 
-      exit(0);
+        //      printf("%s=%d,%d\n", "community", MgScore(isoBonus), EgScore(isoBonus));
+        //      PrintBB(community);
+        //      printf("Color=%d isoCount=%d\n", (int)color, isoCount);
+        //      PrintBB(isoPawns);
+
+        exit(0);
     }
 #endif
 
