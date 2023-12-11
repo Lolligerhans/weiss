@@ -170,7 +170,7 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
     // Pawns defending pawns
     count = PopCount(pawns & PawnBBAttackBB(pawns, !color));
-//    eval += PawnSupport * count;
+    eval += PawnSupport * count;
     TraceCount(PawnSupport);
 
     // Open pawns
@@ -190,13 +190,20 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     // All BB
     Bitboard const pn = N1(pawns);
     Bitboard const pnn = N2(pawns);
-    Bitboard const pd = ShiftBB(pawns, down);
     eval += PawnDoubled * PopCount(pawns & pn);
     eval += PawnDoubled2 * PopCount(pawns & pnn);
     Bitboard const pnw = W1(pn);
     Bitboard const pne = E1(pn);
     Bitboard const p_nw_ne = pnw | pne;
-    eval += PawnSupport * PopCount(pawns & p_nw_ne);
+//    eval += PawnSupport * PopCount(pawns & p_nw_ne);
+
+    Bitboard const pd = ShiftBB(pawns, down);
+
+    UNUSED(pd);
+    UNUSED(up);
+    UNUSED(pnw);
+    UNUSED(pne);
+    UNUSED(p_nw_ne);
 
     // Isolated BB
     // Could additionally:
