@@ -179,8 +179,6 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
 
     // Pawns defending pawns
     count = PopCount(pawns & PawnBBAttackBB(pawns, !color));
-    real = count;
-    realBoard = pawns & PawnBBAttackBB(pawns, !color);
 //    eval += PawnSupport * count;
     TraceCount(PawnSupport);
 
@@ -199,21 +197,26 @@ INLINE int EvalPawns(const Position *pos, EvalInfo *ei, const Color color) {
     }
 
     // All BB
+    // Doubled
     Bitboard const pn = N1(pawns);
     Bitboard const pnn = N2(pawns);
     eval += PawnDoubled * PopCount(pawns & pn);
     eval += PawnDoubled2 * PopCount(pawns & pnn);
 
+    // Support
     Bitboard const pd = ShiftBB(pawns, down);
     Bitboard const p_de_dw = ShiftBB(pd, WEST) | ShiftBB(pd, EAST);
     eval += PawnSupport * PopCount(pawns & p_de_dw);
-    fake = PopCount(pawns & p_de_dw);
-    fakeBoard = pawns & p_de_dw;
+
+    // Non-blocked ("open")
+    // Using the exact implementation its probably not helpful inside the W/B
+    // split to do anything else. for open pawns.
+//    Bitboard p_ufill = Fill(pawns, up);
+//    eval -= PawnOpen * PopCount(colorPieceBB(!color, PAWN) & ~p_ufill & ~pawnAttacks);
 
     Bitboard const pnw = W1(pn) & ~fileHBB;
     Bitboard const pne = E1(pn) & ~fileABB;
     Bitboard const p_nw_ne = pnw | pne;
-//    eval += PawnSupport * PopCount(pawns & p_nw_ne);
 
     UNUSED(pd);
     UNUSED(up);
